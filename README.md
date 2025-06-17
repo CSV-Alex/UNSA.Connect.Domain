@@ -30,7 +30,7 @@ Enable **students**, **faculty**, **alumni**, **administrators** and **researche
 
 > **Prototype / GUI**  
 > View our interactive Figma prototype:  
-> https://www.figma.com/file/XXXXX/unsa-connect-prototype
+> [https://www.figma.com/file/XXXXX/unsa-connect-prototype](https://www.figma.com/design/cyspGkz0LOdwwIw2VNx517/UNSAlink?node-id=0-1&t=4jBZSs2lIdbaE7Yt-1)
 
 ---
 
