@@ -1,150 +1,88 @@
 # UNSA.Connect.Domain
 
-Welcome to the **UNSA.Connect.Domain** repository!  
-This project is developed by the CSV-Alex team and is organized according to Domain-Driven Design (DDD) best practices, leveraging C# and modern .NET frameworks.
+Core **domain** logic for **UNSA.Connect**, a Reddit-style platform to centralize **news**, **events**, **scholarships**, **services** and **discussions** for the UNSA community. Built with C# and .NET following **Domain-Driven Design** principles.
 
 ---
 
-## Purpose
+## 🎯 Purpose
 
-The purpose of this repository is to provide the core domain logic for the UNSA.Connect platform. This domain layer encapsulates business rules, entities, value objects, and aggregates that represent the heart of the system, decoupled from infrastructure concerns. Our goal is to enable high scalability, maintainability, and a clear separation of concerns following DDD principles.
-
----
-
-## Features
-
-### High-Level Functionalities
-
-- **User Management**: Registration, authentication, profile management.
-- **Collaboration Tools**: Group creation, messaging, notifications.
-- **Academic Modules**: Course enrollment, assignment tracking, grade viewing.
-- **Community Engagement**: Event organization, discussion forums.
-
-#### UML Use Case Diagram
-
-```mermaid
-usecaseDiagram
-  actor User
-  actor Admin
-  User --> (Register)
-  User --> (Login)
-  User --> (View Profile)
-  User --> (Join Group)
-  User --> (Send Message)
-  User --> (Enroll in Course)
-  User --> (View Assignments)
-  User --> (View Grades)
-  User --> (Participate in Event)
-  Admin --> (Manage Users)
-  Admin --> (Manage Courses)
-```
-
-### Prototype / GUI
-
-> **Note:** The domain layer is UI-agnostic. GUI and prototypes are implemented in the application and presentation layers.  
-> See the main UNSA.Connect repository for frontend prototypes.
+Enable **students**, **faculty**, **alumni**, **administrators** and **researchers** at UNSA to:
+- Share and discover **official news** and **bulletins**  
+- Coordinate and attend **campus events** (talks, workshops, congresses)  
+- Find and apply to **scholarship** calls  
+- Access key **university services** (libraries, labs, admin processes)  
+- Engage in **forum-style discussions** and **group collaborations**
 
 ---
 
-## Domain Model
+## 🚀 High-Level Features & Use Cases
 
-### Class Diagram
+![Use Cases Diagram](docs/use-cases.png)
 
-```mermaid
-classDiagram
-  class User {
-    +Guid Id
-    +string Name
-    +string Email
-    +Profile Profile
-    +Authenticate()
-  }
-  class Group {
-    +Guid Id
-    +string Name
-    +List~User~ Members
-    +AddMember()
-  }
-  class Course {
-    +Guid Id
-    +string Title
-    +List~Assignment~ Assignments
-  }
-  class Assignment {
-    +Guid Id
-    +string Description
-    +DateTime DueDate
-  }
-  class Event {
-    +Guid Id
-    +string Title
-    +DateTime Date
-  }
-  User "1" -- "1" Profile
-  User "1" -- "*" Group : MemberOf
-  User "*" -- "*" Course : Enrolled
-  Course "1" -- "*" Assignment
-  User "*" -- "*" Event : Participates
-```
+| Actor        | Use Case                              |
+|--------------|---------------------------------------|
+| Visitor      | Browse public news & events           |
+| Student      | Register, Customize Profile, View Posts & Works |
+| Faculty      | Publish Announcements, Comment, Share |
+| Alumni       | Join Groups, Request Ideas            |
+| Administrator| Manage Users & Content                |
+| Researcher   | Create Research Groups, Share Findings|
 
-### Modules
-
-- **User Management**
-- **Groups & Collaboration**
-- **Academic Domain**
-- **Events & Forums**
+> **Prototype / GUI**  
+> View our interactive Figma prototype:  
+> https://www.figma.com/file/XXXXX/unsa-connect-prototype
 
 ---
 
-## Architecture Overview
+## 📐 Domain Model
 
-### Package Diagram
+![Class Diagram](docs/domain-model.png)
 
-```mermaid
-packageDiagram
-  package "UNSA.Connect.Domain" {
-    [Users]
-    [Groups]
-    [Courses]
-    [Assignments]
-    [Events]
-  }
-  [Users] --> [Groups]
-  [Users] --> [Courses]
-  [Courses] --> [Assignments]
-  [Users] --> [Events]
-```
-
-### Class Diagram (Sample)
-
-> See the **Domain Model** section above for more details.
-
----
-
-## Organization
-
-This repository follows strict DDD folder structure:
-
-- `/Entities` - Domain entities (e.g., User, Group, Course)
-- `/ValueObjects` - Immutable domain value objects
-- `/Aggregates` - Aggregate roots and boundaries
-- `/Repositories` - Domain repository interfaces (no infrastructure code)
-- `/Services` - Domain services encapsulating business logic
-- `/Events` - Domain events
+**Modules & Aggregates**  
+- **Domain.Models**  
+  - **User** (`Id, Name, Email, Profile, Role`)  
+  - **Profile** (`Id, Bio, AvatarUrl, Preferences`)  
+  - **Post** (`Id, Title, Content, CreatedAt, PostType, Author, Group, Comments`)  
+  - **Comment** (`Id, Content, CreatedAt, Author, Post`)  
+  - **Group** (`Id, Name, Description, CreatedAt, Members, Posts`)  
+  - **Notification** (`Id, Type, SourceId, Message, IsRead, CreatedAt, Recipient`)  
+- **Domain.Enums**  
+  - `Role { Student, Faculty, Alumni, Administrative, Researcher }`  
+  - `PostType { News, Event, Scholarship, Service, Discussion }`  
+  - `NotificationType { NewPost, NewComment, GroupInvitation, EventUpdate }`  
+- **Domain.Events**  
+  - `UserRegisteredEvent`, `PostCreatedEvent`, `CommentAddedEvent`, `GroupCreatedEvent`, `NotificationSentEvent`  
+- **Domain.Repositories**  
+  - Interfaces only: `IUserRepository`, `IPostRepository`, `ICommentRepository`, `IGroupRepository`, `INotificationRepository`  
+- **Domain.Services**  
+  - Business logic beyond a single aggregate: `PostDomainService`, `NotificationDomainService`, etc.  
+- **Domain.Factories**  
+  - Aggregate creation: `UserFactory`, `PostFactory`, `GroupFactory`, `CommentFactory`, `NotificationFactory`
 
 ---
 
-## Contribution
+## 🏗️ Architecture Overview
 
-Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+![Package Diagram](docs/package-diagram.png)
 
----
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-**CSV-Alex | UNSA.Connect.Domain**  
-*Empowering collaborative and academic communities with robust domain logic.*
+```text
+UNSA.Connect
+│
+├─ Presentation.Controllers
+│    └─ UsersController, PostsController, GroupsController, NotificationsController
+│
+├─ Application
+│    ├─ Interfaces       # IUserService, IPostService, IGroupService, INotificationService
+│    └─ Services         # UserService, PostService, GroupService, NotificationService
+│
+├─ Domain
+│    ├─ Models           # Entities & Value Objects
+│    ├─ Enums            # Role, PostType, NotificationType
+│    ├─ Events           # Domain Events
+│    ├─ Repositories     # Interfaces
+│    ├─ Services         # Domain Services
+│    └─ Factories        # Aggregate Factories
+│
+└─ Infrastructure
+     ├─ Persistence      # ApplicationDbContext, EF Core Configurations
+     └─ Repositories     # EF Core implementations of IRepository interfaces
